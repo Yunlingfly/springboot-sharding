@@ -1,5 +1,6 @@
 package cn.yunlingfly.springbootsharding.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -8,7 +9,7 @@ import java.util.Date;
 @Data
 @TableName(value = "t_order_item")
 public class OrderItem {
-
+    @TableId
     private Long itemId;
 
     private Integer orderId;
