@@ -1,0 +1,60 @@
+spring:
+  shardingsphere:
+    datasource:
+      ds0:
+        driver-class-name: com.mysql.jdbc.Driver
+        password: 'root'
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbcUrl: jdbc:mysql://151.168.99.100:3506/ds0?useSSL=false
+        username: root
+      ds1:
+        driver-class-name: com.mysql.jdbc.Driver
+        password: 'root'
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbcUrl: jdbc:mysql://151.168.99.100:3506/ds1?useSSL=false
+        username: root
+      names: ds0,ds1
+    sharding:
+      binding-tables: t_order,t_order_item
+      broadcast-tables: t_config
+      default-database-strategy:
+        inline:
+          algorithm-expression: ds$->{user_id % 2}
+          sharding-column: user_id
+      tables:
+        t_order:
+          actual-data-nodes: ds$->{0..1}.t_order$->{0..1}
+          key-generator:
+            column: order_id
+            type: SNOWFLAKE
+          table-strategy:
+            inline:
+              algorithm-expression: t_order$->{order_id % 2}
+              sharding-column: order_id
+        t_order_item:
+          actual-data-nodes: ds$->{0..1}.t_order_item$->{0..1}
+          key-generator:
+            column: order_item_id
+            type: SNOWFLAKE
+          table-strategy:
+            inline:
+              algorithm-expression: t_order_item$->{order_id % 2}
+              sharding-column: order_id
+  ## 打印sql，显示当前sql路由的数据库
+    props:
+      sql:
+        show: true
+server:
+  port: 8085
+mybatis-plus:
+  mapper-locations: classpath*:cn/yunlingfly/**/xml/*Mapper.xml
+  global-config:
+    # 关闭MP3.0自带的banner
+    banner: false
+    db-config:
+      #主键类型  0:"数据库ID自增",1:"该类型为未设置主键类型", 2:"用户输入ID",3:"全局唯一ID (数字类型唯一ID)", 4:"全局唯一ID UUID",5:"字符串全局唯一ID (idWorker 的字符串表示)";
+      id-type: 4
+      # 默认数据库表下划线命名
+      table-underline: true
+info:
+  des: sharding分片
