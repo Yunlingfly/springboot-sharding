@@ -40,7 +40,8 @@ spring:
             inline:
               algorithm-expression: t_order_item$->{order_id % 2}
               sharding-column: order_id
-  ## 打印sql，显示当前sql路由的数据库
+      default-data-source-name: ds0
+    ## 打印sql，显示当前sql路由的数据库
     props:
       sql:
         show: true
